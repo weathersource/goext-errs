@@ -90,6 +90,12 @@ func (t *permErr) Temporary() bool {
 	return false
 }
 
+func (t *tempErr) Unwrap() error {
+	return t.error
+}
+func (t *permErr) Unwrap() error {
+	return t.error
+}
 func (t *tempErr) Cause() error {
 	return t.error
 }

@@ -6,3 +6,5 @@
 
 
 Errs is a helper package that inspects golang errors and determines wether they are temporary.
+
+Errs is compatible with go >= 1.15

@@ -211,5 +211,19 @@ func TestDialTimeout(t *testing.T) {
 	if !errs.Temporary(err) {
 		t.Error("not temporary")
 	}
+}
 
+func TestAddTemporaryCheck(t *testing.T) {
+	err := fmt.Errorf("not temp")
+	err = errs.AddTemporaryCheck(err)
+	type tif interface {
+		Temporary() bool
+	}
+	terr, ok := err.(tif)
+	if !ok {
+		t.Fatal("AddTemporaryCheck failed")
+	}
+	if terr.Temporary() {
+		t.Error("expected not temporary")
+	}
 }

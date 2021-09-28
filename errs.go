@@ -52,16 +52,14 @@ func Temporary(err error) bool {
 			return true
 		}
 	}
+
+	//not really needed, as context.DeadlineExceeded implements Temporary()
 	if errors.Is(err, os.ErrDeadlineExceeded) {
 		return true
 	}
 
 	//cancelled contexts
 	if errors.Is(err, context.Canceled) {
-		return true
-	}
-	//not really needed, as context.DeadlineExceeded implements Temporary()
-	if errors.Is(err, context.DeadlineExceeded) {
 		return true
 	}
 
@@ -108,4 +106,23 @@ func MakeTemporary(err error) error {
 }
 func MakePermanent(err error) error {
 	return &permErr{err}
+}
+
+type werr struct {
+	error
+}
+
+func (t *werr) Temporary() bool {
+	return Temporary(t.error)
+}
+
+// AddTemporary ensures that err exposes a `Temporary() bool` method
+func AddTemporaryCheck(err error) error {
+	type terr interface {
+		Temporary() bool
+	}
+	if _, ok := err.(terr); ok {
+		return err
+	}
+	return &werr{err}
 }

@@ -17,6 +17,7 @@ package errs
 import (
 	"context"
 	"errors"
+	"io"
 	"os"
 	"strings"
 	"syscall"
@@ -118,6 +119,9 @@ func (t *werr) Temporary() bool {
 
 // AddTemporary ensures that err exposes a `Temporary() bool` method
 func AddTemporaryCheck(err error) error {
+	if err == nil || err == io.EOF || err == io.ErrUnexpectedEOF {
+		return err
+	}
 	type terr interface {
 		Temporary() bool
 	}

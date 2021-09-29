@@ -17,6 +17,7 @@ package errs_test
 import (
 	"context"
 	"fmt"
+	"io"
 	"net"
 	"syscall"
 	"testing"
@@ -225,5 +226,16 @@ func TestAddTemporaryCheck(t *testing.T) {
 	}
 	if terr.Temporary() {
 		t.Error("expected not temporary")
+	}
+	err = io.EOF
+	err = errs.AddTemporaryCheck(err)
+	if err != io.EOF {
+		t.Error("EOF was wrapped")
+	}
+
+	eerr := temperr{error: fmt.Errorf("temp"), t: true}
+	err = errs.AddTemporaryCheck(eerr)
+	if err != eerr {
+		t.Error("error already exposing Temporary() was wrapped")
 	}
 }

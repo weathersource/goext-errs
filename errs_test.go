@@ -19,10 +19,15 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"os"
 	"syscall"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/compute/metadata"
 	"github.com/airbusgeo/errs"
 	"github.com/pkg/errors"
 	oldcontext "golang.org/x/net/context"
@@ -238,4 +243,24 @@ func TestAddTemporaryCheck(t *testing.T) {
 	if err != eerr {
 		t.Error("error already exposing Temporary() was wrapped")
 	}
+}
+
+type mockMetaServer struct{}
+
+func (m mockMetaServer) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(500)
+}
+func TestGCEMetadataError(t *testing.T) {
+	ms := mockMetaServer{}
+	srv := httptest.NewServer(ms)
+	defer srv.Close()
+	surl, _ := url.Parse(srv.URL)
+
+	os.Setenv("GCE_METADATA_HOST", surl.Host)
+	mc := metadata.NewClient(nil)
+	_, err := mc.ProjectID()
+	if !errs.Temporary(err) {
+		t.Error("meta not raised")
+	}
+
 }

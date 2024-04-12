@@ -28,7 +28,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/compute/metadata"
-	"github.com/airbusgeo/errs"
+	errs "github.com/weathersource/goext-errs"
 	"github.com/pkg/errors"
 	oldcontext "golang.org/x/net/context"
 	"google.golang.org/api/googleapi"

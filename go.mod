@@ -1,10 +1,12 @@
-module github.com/airbusgeo/errs
+module github.com/weathersource/goext-errs
 
-go 1.16
+go 1.21.0
 
 require (
-	cloud.google.com/go v0.88.0
+	cloud.google.com/go/compute/metadata v0.2.3
 	github.com/pkg/errors v0.9.1
-	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420
-	google.golang.org/api v0.52.0
+	golang.org/x/net v0.24.0
+	google.golang.org/api v0.172.0
 )
+
+require cloud.google.com/go/compute v1.23.4 // indirect
